@@ -1,0 +1,35 @@
+.tool{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: calc((100% / 10) - 2px);
+    padding: 10px;
+    height: 100%;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    &:hover{
+        .tool_name{
+            color: var(--primary);
+        }
+        background: var(--secondary);
+    }
+}
+.tool_name{
+    font-size: 14px;
+    font-family: 'Noto Sans';
+    color: var(--third);
+    transition: 0.3s;
+}
+
+@media (max-width: 600px){
+    .tool{
+        width: calc((100% / 5) - 2px);
+    }
+    .tool_name{
+        display: none;
+    }
+}

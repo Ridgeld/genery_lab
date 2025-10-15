@@ -1,0 +1,25 @@
+.start_button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans';
+    font-size: 14px;
+    font-weight: 500;
+    // color: var(--background);
+    cursor: pointer;
+    width: 80px;
+    padding: 6px 10px 6px 10px;
+    border-radius: 6px;
+    border: none;
+    // background: var(--primary);
+    transition: 0.3s;
+
+}
+    .active{
+        color: var(--background);   
+        background: var(--primary);
+    }
+    .anactive{
+        color: var(--third);   
+        background: var(--secondary);
+    }

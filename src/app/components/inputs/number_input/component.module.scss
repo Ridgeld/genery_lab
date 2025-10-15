@@ -1,0 +1,42 @@
+.body{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 100%;
+    padding: 4px 4px 4px 8px;
+    gap: 8px;
+    background: var(--secondary);
+    transition: 0.3s;
+    border-radius: 6px;
+    transition: 0.3s;
+    &:hover{
+        outline: 1px solid var(--active);
+    }
+    &:focus-within{
+        outline: 1px solid var(--active);
+    }
+    .name{
+        font-size: 14px;
+        font-weight: 500;
+        font-family: 'Noto Sans';
+        color: var(--third);
+    }
+    input{
+        width: 100%;
+        height: 100%;
+        border: none;
+        outline: none;
+        background: none;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: 'Noto Sans';
+        color: var(--primary);
+    }
+}
+@media(max-width:600px){
+    .body{
+        width: calc(30% - 8px);
+    }
+}

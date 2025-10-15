@@ -1,0 +1,12 @@
+.body{
+    display: flex;
+    padding: 6px 10px 6px 10px;
+    font-family: 'Noto Sans';
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--background);
+    background: var(--primary);
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
