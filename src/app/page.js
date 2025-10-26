@@ -88,6 +88,8 @@ import VelocityTable from "./components/tables/velocity_table/component";
 import SpeedDiagram from "./components/diagram/speed_diagram/component";
 import AccelerationDiagram from "./components/acceleration_diagram/component";
 import AccelerationTable from "./components/tables/acceleration_table/component";
+import VelocityGraphsSVG from "./components/diagrams/speed/component";
+import AccelerationGraphsSVG from "./components/diagrams/accelerate/component";
 
 export default function Home() {
   const [mechanismData, setMechanismData] = useState([
@@ -100,6 +102,7 @@ export default function Home() {
   const [isInputShow, setIsInputShow] = useState(false);
   const [isTableShow, setITablesShow] = useState(false);
   const [isAccelerationShow, setIsAccelerationShow] = useState(false);
+  const [isDiagramsShow, setIsDiagramsShow] = useState(false)
   const [isStop, setIsStop] = useState(true);
 
   // Обновление всех данных механизма
@@ -124,6 +127,7 @@ export default function Home() {
     if (id === 1) setIsInputShow(!isInputShow);
     if (id === 2) setITablesShow(!isTableShow);
     if (id === 3) setIsAccelerationShow(!isAccelerationShow)
+    if (id === 4) setIsDiagramsShow(!isDiagramsShow)
   };
 
   const handleButtonClick = (isStop) => {
@@ -159,7 +163,7 @@ export default function Home() {
                 L3={mechanismData[2]?.value ?? 0}
                 L0={mechanismData[3]?.value ?? 0}
                 angle={mechanismData[4]?.value ?? 90}         // ← единый источник
-                omega={mechanismData[5]?.value ?? 157.08}
+                omega={mechanismData[5]?.value ?? 0.157}
               />
           </div>
             <VelocityTable
@@ -167,7 +171,7 @@ export default function Home() {
                 L2={mechanismData[1]?.value ?? 0}
                 L3={mechanismData[2]?.value ?? 0}
                 L0={mechanismData[3]?.value ?? 0}
-                omega={mechanismData[5]?.value ?? 157.08}
+                omega={mechanismData[5]?.value ?? 0.157}
                 isShow={isTableShow}
             />
             <div className={styles['group-row']}>
@@ -179,15 +183,32 @@ export default function Home() {
                   L3={mechanismData[2]?.value ?? 0}
                   L0={mechanismData[3]?.value ?? 0}
                   angle={mechanismData[4]?.value ?? 90}        
-                  omega={mechanismData[5]?.value ?? 157.08}/>
+                  omega={mechanismData[5]?.value ?? 0.157}/>
                 <AccelerationTable
                   L1={mechanismData[0]?.value ?? 0}
                   L2={mechanismData[1]?.value ?? 0}
                   L3={mechanismData[2]?.value ?? 0}
                   L0={mechanismData[3]?.value ?? 0}
                   angle={mechanismData[4]?.value ?? 90}         
-                  omega={mechanismData[5]?.value ?? 157.08}/>
+                  omega={mechanismData[5]?.value ?? 0.157}/>
                 </>}
+            </div>
+            <div className={styles['group-row']}>
+              <VelocityGraphsSVG
+                L1={mechanismData[0]?.value ?? 0}
+                L2={mechanismData[1]?.value ?? 0}
+                L3={mechanismData[2]?.value ?? 0}
+                L0={mechanismData[3]?.value ?? 0}
+                omega={mechanismData[5]?.value ?? 0.157}
+                isShow={isDiagramsShow}/>
+              <AccelerationGraphsSVG
+                L1={mechanismData[0]?.value ?? 0}
+                L2={mechanismData[1]?.value ?? 0}
+                L3={mechanismData[2]?.value ?? 0}
+                L0={mechanismData[3]?.value ?? 0}
+                angle={mechanismData[4]?.value ?? 90} 
+                omega={mechanismData[5]?.value ?? 0.157}
+                isShow={isDiagramsShow}/>
             </div>
       </div>
     </div>

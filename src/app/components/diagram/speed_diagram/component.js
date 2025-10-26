@@ -6,16 +6,17 @@ import styles from './component.module.scss';
 /**
  * Вспомогательная функция для рисования стрелки
  */
-const lineColors = ['#fff', '#ff9898', '#2c7', '#e67e22']
+const lineColors = ['#105CFF', '#FF6969', '#FF10CF', '#10FF78']
 const BgColors = ['#171717ff', '#6c6c6cff', '#']
 
 function drawArrow(ctx, from, to, color) {
-    const headlen = 8;
+    const headlen = 20;
     const dx = to.x - from.x, dy = to.y - from.y;
     const ang = Math.atan2(dy, dx);
     ctx.strokeStyle = color || "#000";
     ctx.fillStyle = color || "#000";
     ctx.beginPath();
+    ctx.lineWidth = 6;
     ctx.moveTo(from.x, from.y);
     ctx.lineTo(to.x, to.y);
     ctx.stroke();

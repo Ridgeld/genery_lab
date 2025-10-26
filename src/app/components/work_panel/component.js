@@ -12,7 +12,7 @@ export default function WorkPanel({isShow, onDataChange, angle}){
         { id:'length', name: 'L3', placeholder: 'см', init: 3 },
         { id:'length', name: 'L0', placeholder: 'см', init: 3 },
         { id:'speed', name: 'Угол', placeholder: '°', init: angle ?? 45 },
-        { id:'speed', name: 'W', placeholder: 'рад/c', init: 157.08 },
+        { id:'speed', name: 'W', placeholder: 'рад/c', init: 0.157 },
     ], [angle]);
 
 

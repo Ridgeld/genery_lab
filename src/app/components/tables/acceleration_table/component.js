@@ -74,40 +74,40 @@ export default function AccelerationTable({ L0, L1, L2, L3, angle, omega }) {
   ];
 
     const exportToCSV = () => {
-  const headers = ["Тип", "Параметр", "Значение", "Ед. изм.", "Направление"];
+      const headers = ["Тип", "Параметр", "Значение", "Ед. изм.", "Направление"];
 
-  const rows = [
-    ...tableData.map(item => [
-      "Линейное ускорение",
-      item.label,
-      item.value.toFixed(6),
-      item.unit,
-      ""
-    ]),
-    ...angularData.map(item => [
-      "Угловое ускорение",
-      item.label,
-      item.value.toFixed(6),
-      item.unit,
-      item.direction || ""
-    ])
-  ];
+      const rows = [
+        ...tableData.map(item => [
+          "Линейное ускорение",
+          item.label,
+          item.value.toFixed(6),
+          item.unit,
+          ""
+        ]),
+        ...angularData.map(item => [
+          "Угловое ускорение",
+          item.label,
+          item.value.toFixed(6),
+          item.unit,
+          item.direction || ""
+        ])
+        ];
 
-  // Формируем CSV-строку
-  const csvContent = [
-    headers.join(";"),
-    ...rows.map(r => r.join(";"))
-  ].join("\n");
+    // Формируем CSV-строку
+      const csvContent = [
+        headers.join(";"),
+        ...rows.map(r => r.join(";"))
+      ].join("\n");
 
-  // Добавляем BOM, чтобы Excel понял UTF-8
-  const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", "acceleration_results.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+      // Добавляем BOM, чтобы Excel понял UTF-8
+      const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "acceleration_results.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 };
 
   return (

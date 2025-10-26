@@ -195,6 +195,7 @@ import styles from './component.module.scss';
 
 const INITIAL_CANVAS_SIZE = 400;
 
+const colors = ['#105CFF', '#FF10CF', '#10FF78', '#FF6969']
 /**
  * Вспомогательная функция для рисования стрелки
  */
@@ -257,7 +258,7 @@ function drawAccelerationDiagram(canvas, adata, actualWidth, actualHeight) {
     actx.beginPath(); actx.moveTo(0, offsetY); actx.lineTo(actualWidth, offsetY); actx.stroke();
     
     if (!adata || !adata.valid) {
-        actx.fillStyle = "#ff9898"; actx.font = "14px sans-serif";
+        actx.fillStyle = colors[4]; actx.font = "14px sans-serif";
         actx.fillText("Нет решения для плана ускорений.", 10, 20);
         actx.restore(); return;
     }
@@ -286,9 +287,9 @@ function drawAccelerationDiagram(canvas, adata, actualWidth, actualHeight) {
     const aC_px = toPx(adata.aC_end_mm); // Точка пересечения
 
     // ОТРИСОВКА ВЕКТОРОВ
-    drawArrow(actx, aP_px, aB_px, "#1e90ff"); // aB (от P до aB) - СИНИЙ
-    drawArrow(actx, aP_px, Dn_px, "#f39c12"); // aCD^n (от P до Dn) - ЖЕЛТЫЙ
-    drawArrow(actx, aB_px, Cn_px, "#27ae60"); // aCB^n (от aB до Cn) - ЗЕЛЕНЫЙ
+    drawArrow(actx, aP_px, aB_px, colors[0]); // aB (от P до aB) - СИНИЙ
+    drawArrow(actx, aP_px, Dn_px, colors[2]); // aCD^n (от P до Dn) - ЖЕЛТЫЙ
+    drawArrow(actx, aB_px, Cn_px, colors[1]); // aCB^n (от aB до Cn) - ЗЕЛЕНЫЙ
 
 
     //Строим тангенциальные векторы (от Cn до aC, от Dn до aC) ---
