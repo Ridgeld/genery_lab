@@ -159,6 +159,7 @@ export default function AccelerationTable({ L0, L1, L2, L3, angle, omega }) {
       </div>
         <div className={styles['button-wrapper']}>
             <DefaultButton
+            
                 name={'Экспортировать в CSV'}
                 onClick={exportToCSV}/>
         </div>
