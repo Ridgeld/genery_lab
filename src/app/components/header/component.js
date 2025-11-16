@@ -15,10 +15,7 @@ export default function Header({onButtonClick}){
     return(
         <header className={styles['header']}>
             <div className={styles['logo']}>
-                <div className={styles['icon']}>
-                    <Image src={'icon.svg'} width={30} height={30} alt='logo'/>
-                </div>
-                <h2>Genery LAB</h2>
+                <h2>Расчет механизма</h2>
             </div>
             <div className={styles['controls']}>
                 <StartButton 

@@ -13,6 +13,10 @@ export default function WorkPanel({isShow, onDataChange, angle}){
         { id:'length', name: 'L0', placeholder: 'см', init: 3 },
         { id:'speed', name: 'Угол', placeholder: '°', init: angle ?? 45 },
         { id:'speed', name: 'W', placeholder: 'рад/c', init: 0.157 },
+        { id:'weight', name: 'масса L1', placeholder: 'кг', init: 1 },
+        { id:'weight', name: 'масса L2', placeholder: 'кг', init: 1 },
+        { id:'weight', name: 'масса L3', placeholder: 'кг', init: 1 },
+        { id:'strength', name: 'F', placeholder: 'H', init: 1 },
     ], [angle]);
 
 
@@ -47,7 +51,7 @@ export default function WorkPanel({isShow, onDataChange, angle}){
     return(
         <section className={styles['body']}
             style={{
-                marginTop: isShow ? '0' : '-300px'
+                marginTop: isShow ? '0' : '-700px'
             }}>
             <div className={styles['group-row']}>
                 <div className={styles['group-column']}>
@@ -80,6 +84,42 @@ export default function WorkPanel({isShow, onDataChange, angle}){
                                 key={input.name}
                                 name={input.name}
                                 init={input.name === 'Угол' ? angle : input.init}
+                                placeholder={input.placeholder}
+                                onChange={(name, newValue) => handleInputChange(name, newValue)}
+                            />
+                            ))}
+                    </div>
+                </div>
+                <div className={styles['group-column']}>
+                    <h3 className={styles['name']}>
+                        Масса звеньев
+                    </h3>
+                    <div className={styles['group']}>
+                        {inputs
+                            .filter((input) => input.id === 'weight')
+                            .map((input) => (
+                            <NumberInput
+                                key={input.name}
+                                name={input.name}
+                                init={input.init}
+                                placeholder={input.placeholder}
+                                onChange={(name, newValue) => handleInputChange(name, newValue)}
+                            />
+                            ))}
+                    </div>
+                </div>
+                <div className={styles['group-column']}>
+                    <h3 className={styles['name']}>
+                        Сила
+                    </h3>
+                    <div className={styles['group']}>
+                        {inputs
+                            .filter((input) => input.id === 'strength')
+                            .map((input) => (
+                            <NumberInput
+                                key={input.name}
+                                name={input.name}
+                                init={input.init}
                                 placeholder={input.placeholder}
                                 onChange={(name, newValue) => handleInputChange(name, newValue)}
                             />

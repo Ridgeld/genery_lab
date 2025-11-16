@@ -1,81 +1,3 @@
-// 'use client'
-// import styles from "./page.module.scss";
-// import Header from "./components/header/component";
-// import Toolbar from "./components/toolbar/component";
-// import tools from './tools.js'
-// import NumberInput from "./components/inputs/number_input/component";
-// import WorkPanel from "./components/work_panel/component";
-// import { useState } from "react";
-// import GraphicsPlace from "./components/graphics_place/component";
-// import VelocityTable from "./components/tables/velocity_table/component";
-// import SpeedDiagram from "./components/diagram/speed_diagram/component";
-
-
-// export default function Home() {
-//   const [mechanismData, setMechanismData] = useState([]);
-//   const [isShow, setIsShow] = useState(false)
-//   const [isStop, setIsStop] = useState(true)
-//   const [angle, setAngle] = useState(mechanismData[4]?.value ?? 0)
-
-
-//     const handleWorkPanelChange = (data) => {
-//         console.log('Данные получены с WorkPanel:', data);
-//         setMechanismData(data); // Сохраняем данные в состоянии родителя
-//         console.log(mechanismData[0].value)
-//     };
-
-
-
-//   const handleToolClick = (id) => {
-//       console.log(id)
-//     if (id === 1){
-//       setIsShow(!isShow)
-//     }
-//   }
-
-//   const handleButtonClick = (isStop) =>{
-//     setIsStop(isStop)
-//   }
-
-//   const handleAngleChange = (angle) => {
-//     setAngle(angle)
-//   }
-//   return (
-//     <div className={styles['container']}>
-//       <Header
-//         onButtonClick={handleButtonClick}/>
-//       <Toolbar
-//         tools={tools}
-//         toolClick={handleToolClick}
-//         />
-//       <WorkPanel 
-//         isShow={isShow}
-//         angle={angle}
-//         onDataChange={handleWorkPanelChange}/>
-//       <GraphicsPlace
-//         isStop={isStop}
-//         L1={mechanismData[0]?.value ?? 0}
-//         L2={mechanismData[1]?.value ?? 0}
-//         L3={mechanismData[2]?.value ?? 0}
-//         L0={mechanismData[3]?.value ?? 0}
-//         angle={mechanismData[4]?.value ?? 90}
-//         onAngleChange={handleAngleChange}/>
-//       <VelocityTable
-//         L1={mechanismData[0]?.value ?? 0}
-//         L2={mechanismData[1]?.value ?? 0}
-//         L3={mechanismData[2]?.value ?? 0}
-//         L0={mechanismData[3]?.value ?? 0}
-//         omega={157.08}/>
-//       <SpeedDiagram
-//           L1={mechanismData[0]?.value ?? 0}
-//           L2={mechanismData[1]?.value ?? 0}
-//           L3={mechanismData[2]?.value ?? 0}
-//           L0={mechanismData[3]?.value ?? 0}
-//           angle={angle}
-//           omega={157.08}/>
-//     </div>
-//   );
-// }
 'use client'
 import styles from "./page.module.scss";
 import Header from "./components/header/component";
@@ -90,6 +12,7 @@ import AccelerationDiagram from "./components/acceleration_diagram/component";
 import AccelerationTable from "./components/tables/acceleration_table/component";
 import VelocityGraphsSVG from "./components/diagrams/speed/component";
 import AccelerationGraphsSVG from "./components/diagrams/accelerate/component";
+import TorquesGraphsSVG from "./components/diagrams/strength/component";
 
 export default function Home() {
   const [mechanismData, setMechanismData] = useState([
@@ -97,7 +20,12 @@ export default function Home() {
     { name: "L2", value: 0 },
     { name: "L3", value: 0 },
     { name: "L0", value: 0 },
-    { name: "angle", value: 90 }, // <-- угол хранится тут
+    { name: "angle", value: 90 },
+    { name: 'omega', value: 0},
+    { name: 'L1_m', value: 1},
+    { name: 'L2_m', value: 1},
+    { name: 'L3_m', value: 1},
+    { name: 'F_ext', value: 1},
   ]);
   const [isInputShow, setIsInputShow] = useState(false);
   const [isTableShow, setITablesShow] = useState(false);
@@ -108,6 +36,7 @@ export default function Home() {
   // Обновление всех данных механизма
   const handleWorkPanelChange = (data) => {
     setMechanismData(data);
+    console.log(data)
   };
 
   // Универсальный обработчик изменения угла
@@ -208,6 +137,19 @@ export default function Home() {
                 L0={mechanismData[3]?.value ?? 0}
                 angle={mechanismData[4]?.value ?? 90} 
                 omega={mechanismData[5]?.value ?? 0.157}
+                isShow={isDiagramsShow}/>
+            </div>
+            <div className={styles['group-row']}>
+              <TorquesGraphsSVG
+                L1={mechanismData[0]?.value ?? 0}
+                L2={mechanismData[1]?.value ?? 0}
+                L3={mechanismData[2]?.value ?? 0}
+                L0={mechanismData[3]?.value ?? 0}
+                omega={mechanismData[5]?.value ?? 0.157}
+                m1={mechanismData[6]?.value ?? 1}
+                m2={mechanismData[7]?.value ?? 1}
+                m3={mechanismData[8]?.value ?? 1}
+                F_ext={mechanismData[9]?.value ?? 1} 
                 isShow={isDiagramsShow}/>
             </div>
       </div>

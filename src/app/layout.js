@@ -36,8 +36,8 @@ const notoMono = Noto_Sans_Mono({
 });
 
 export const metadata = {
-  title: "Genery LAB",
-  description: "Made by Genery",
+  title: "Расчет механизма",
+  description: "Made by Genery | DM",
 };
 
 export default function RootLayout({ children }) {

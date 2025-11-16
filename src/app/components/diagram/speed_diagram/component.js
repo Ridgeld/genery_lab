@@ -6,7 +6,7 @@ import styles from './component.module.scss';
 /**
  * Вспомогательная функция для рисования стрелки
  */
-const lineColors = ['#105CFF', '#FF6969', '#FF10CF', '#10FF78']
+const lineColors = ['#105CFF', '#FF6969', '#e700b8ff', '#10FF78']
 const BgColors = ['#171717ff', '#6c6c6cff', '#']
 
 function drawArrow(ctx, from, to, color) {
