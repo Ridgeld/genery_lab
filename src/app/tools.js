@@ -20,6 +20,6 @@ const tools=
         id: 4,
         name: 'Показать графики',
         img: 'tools/4.svg',
-    }
+    },
 ]
 export default tools

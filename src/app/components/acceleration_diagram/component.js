@@ -141,7 +141,7 @@ export default function AccelerationDiagram({ L0, L1, L2, L3, angle, omega }) {
 
 
     useEffect(() => {
-        const updateCanvasSize = () => {            
+        const updateCanvasSize = () => {
 
             const screenWidth = window.innerWidth;
             const newWidth = screenWidth > 600 ? screenWidth / 3 : screenWidth - 40;

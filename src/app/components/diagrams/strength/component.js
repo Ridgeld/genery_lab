@@ -1,11 +1,8 @@
 'use client'
 import React, { useMemo } from 'react';
-// import styles from './component.module.scss'; <-- Удалено
-// Утилиты больше не импортируются, они встроены ниже.
+import styles from './component.module.scss';
 
-// =================================================================
-// КОНФИГУРАЦИЯ ГРАФИКА
-// =================================================================
+
 const PADDING = 40;     
 const BASE_HEIGHT = 400; 
 const EIGHT_POSITIONS = Array.from({ length: 8 }, (_, i) => i * 45);
@@ -209,6 +206,8 @@ export default function TorquesGraphsSVG({
             const aC_vec = add(aC_D_n_vec, aC_D_t_vec); 
             // aC_vec теперь в см/с^2.
 
+            console.log(epsilonBC)
+            console.log(epsilonCD)
             return {
                 epsilonBC: epsilonBC,
                 epsilonCD: epsilonCD,
@@ -454,9 +453,9 @@ export default function TorquesGraphsSVG({
     
     if (validData.length === 0) {
         return (
-            <div className="p-4 max-w-4xl mx-auto bg-white rounded-xl shadow-lg">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6">Графики моментов сил (SVG)</h3>
-                <p className="text-red-600 font-medium">
+            <div className={styles['container']}>
+                <h3 className={styles['title']}>Графики моментов сил</h3>
+                <p className={styles['error']}>
                     Нет достаточных данных для построения графиков. Проверьте входные параметры (особенно геометрию L0, L1, L2, L3) и консоль на наличие ошибок.
                 </p>
             </div>
@@ -464,8 +463,8 @@ export default function TorquesGraphsSVG({
     }
     
     return (
-        <div className="p-4 max-w-4xl mx-auto bg-white rounded-xl shadow-lg">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6">Графики моментов сил (SVG)</h3>
+        <div className={styles['container']}>
+            <h3 className={styles['title']}>Графики моментов сил</h3>
             
             <svg viewBox={`0 0 ${vW} ${BASE_HEIGHT}`} width="100%" height={BASE_HEIGHT}>
                 

@@ -13,6 +13,10 @@ import AccelerationTable from "./components/tables/acceleration_table/component"
 import VelocityGraphsSVG from "./components/diagrams/speed/component";
 import AccelerationGraphsSVG from "./components/diagrams/accelerate/component";
 import TorquesGraphsSVG from "./components/diagrams/strength/component";
+import MySelfMechanism from "./components/test/component";
+import DynamicsTable from "./components/tables/torque_table/component";
+import ImpactPowerGraph from "./components/diagrams/impact/component";
+import ImpactPowerTable from "./components/tables/impact_table/component";
 
 export default function Home() {
   const [mechanismData, setMechanismData] = useState([
@@ -151,7 +155,45 @@ export default function Home() {
                 m3={mechanismData[8]?.value ?? 1}
                 F_ext={mechanismData[9]?.value ?? 1} 
                 isShow={isDiagramsShow}/>
+              <DynamicsTable
+                L1={mechanismData[0]?.value ?? 0}
+                L2={mechanismData[1]?.value ?? 0}
+                L3={mechanismData[2]?.value ?? 0}
+                L0={mechanismData[3]?.value ?? 0}
+                omega={mechanismData[5]?.value ?? 0.157}
+                m1={mechanismData[6]?.value ?? 1}
+                m2={mechanismData[7]?.value ?? 1}
+                m3={mechanismData[8]?.value ?? 1}
+                F_ext={mechanismData[9]?.value ?? 1} 
+                isShow={isDiagramsShow}/>
             </div>
+            <div className={styles['group-row']}>
+              <ImpactPowerGraph
+                L1={mechanismData[0]?.value ?? 0}
+                L2={mechanismData[1]?.value ?? 0}
+                L3={mechanismData[2]?.value ?? 0}
+                L0={mechanismData[3]?.value ?? 0}
+                omega={mechanismData[5]?.value ?? 0.157}
+                m1={mechanismData[6]?.value ?? 1}
+                m2={mechanismData[7]?.value ?? 1}
+                m3={mechanismData[8]?.value ?? 1}
+                F_ext={mechanismData[9]?.value ?? 1} 
+                isShow={isDiagramsShow}/>
+              <ImpactPowerTable
+                L1={mechanismData[0]?.value ?? 0}
+                L2={mechanismData[1]?.value ?? 0}
+                L3={mechanismData[2]?.value ?? 0}
+                L0={mechanismData[3]?.value ?? 0}
+                omega={mechanismData[5]?.value ?? 0.157}
+                m1={mechanismData[6]?.value ?? 1}
+                m2={mechanismData[7]?.value ?? 1}
+                m3={mechanismData[8]?.value ?? 1}
+                F_ext={mechanismData[9]?.value ?? 1} 
+                isShow={isDiagramsShow}/>
+            </div>
+            {/* <div className={styles['group-row']}>
+              <MySelfMechanism/>
+            </div> */}
       </div>
     </div>
   );

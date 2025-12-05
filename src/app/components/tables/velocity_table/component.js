@@ -7,7 +7,7 @@ import DefaultButton from '../../buttons/default_button/component';
 // 8 положений: 0, 45, 90, ..., 315
 const EIGHT_POSITIONS = Array.from({ length: 8 }, (_, i) => i * 45);
 
-export default function VelocityTable({ L0, L1, L2, L3, omega, isExport = false, isShow }) {
+export default function VelocityTable({ L0, L1, L2, L3, omega, isShow }) {
     
 
     const tableData = useMemo(() => {
