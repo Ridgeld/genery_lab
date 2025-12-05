@@ -30,7 +30,6 @@ export default function VelocityTable({ L0, L1, L2, L3, omega, isShow }) {
                 return { angle, Vb: vdata.Vb_mm / 1000, Vcb: null, Vcd: null, ok: false, error: "Прямые параллельны" };
             }
             
-            // Все значения в м/с (V_mm / 1000)
             return {
                 angle,
                 Vb: vdata.Vb_mm / 1000,
@@ -44,20 +43,16 @@ export default function VelocityTable({ L0, L1, L2, L3, omega, isShow }) {
 
 
     const exportToCSV = () => {
-        // Заголовки
         const header = "Угол (°);Vb (м/с);Vcb (м/с);Vcd (м/с)\n";
 
-  // Строки данных
         const rows = tableData.map(row =>
             row.ok
             ? `${row.angle};${row.Vb.toFixed(3)};${row.Vcb.toFixed(3)};${row.Vcd.toFixed(3)}`
             : `${row.angle};${row.Vb !== null ? row.Vb.toFixed(3) : ''};${row.error || ''};`
         );
 
-        // Добавляем BOM (для Excel)
         const csvContent = "\uFEFF" + header + rows.join("\n");
 
-        // Создание Blob и скачивание файла
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
 

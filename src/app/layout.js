@@ -1,24 +1,3 @@
-// import "./globals.css";
-// import styles from './layout.module.scss'
-// export const metadata = {
-//   title: "Genery LAB",
-//   description: "Made by Genery",
-// };
-
-// export default function RootLayout({ children }) {
-//   return (
-//     <html lang="ru">
-//       <body>
-//         <div className={styles.wrapper}>
-//           <div className={styles.content}>
-//               {children}
-//           </div>
-//         </div>
-//       </body>
-//     </html>
-//   );
-// }
-// layout.js
 import "./globals.css";
 import styles from './layout.module.scss';
 import { DM_Sans, Noto_Sans_Mono } from "next/font/google";
@@ -37,7 +16,7 @@ const notoMono = Noto_Sans_Mono({
 
 export const metadata = {
   title: "Расчет механизма",
-  description: "Made by Genery | DM",
+  description: "Made by DM",
 };
 
 export default function RootLayout({ children }) {

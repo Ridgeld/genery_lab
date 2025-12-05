@@ -4,22 +4,16 @@ import { solveMechanism, buildVelocityForAngle } from '../../../utils/kinematics
 import { buildAccelerationForAngle } from '../../../utils/acceleration'; 
 import styles from './component.module.scss';
 
-// =================================================================
-// КОНФИГУРАЦИЯ ГРАФИКА
-// =================================================================
+
 const PADDING = 40;     
 const BASE_HEIGHT = 400; 
 const EIGHT_POSITIONS = Array.from({ length: 8 }, (_, i) => i * 45);
 
-// Цвета линий для графиков - легко изменить здесь
-// aC (полное), aCB_t, aCD_t
 const LINE_COLORS = ['#e91e63', '#2196f3', '#ffc107']; 
 
 export default function AccelerationGraphsSVG({ L0, L1, L2, L3, omega, isShow }) {
     
-    // =================================================================
-    // 1. ПЕРВЫЙ ХУК: Расчет данных для 8 положений (fullTableData)
-    // =================================================================
+
     const fullTableData = useMemo(() => {
         if (![L0, L1, L2, L3].every(v => typeof v === 'number' && v > 0) || typeof omega !== 'number') {
             return [];
@@ -55,9 +49,7 @@ export default function AccelerationGraphsSVG({ L0, L1, L2, L3, omega, isShow })
     
     const validData = fullTableData.filter(d => d.ok);
 
-    // =================================================================
-    // 2. ВТОРОЙ ХУК: Расчет координат SVG и меток
-    // =================================================================
+
     const { 
         pointsData: pData, 
         yAxisLabels: yLabels, 
@@ -131,9 +123,7 @@ export default function AccelerationGraphsSVG({ L0, L1, L2, L3, omega, isShow })
     }, [fullTableData]); 
 
     
-    // =================================================================
-    // 3. УСЛОВНЫЙ РЕНДЕРИНГ (после всех хуков)
-    // =================================================================
+
     
     if (!isShow) {
         return null;
@@ -142,7 +132,7 @@ export default function AccelerationGraphsSVG({ L0, L1, L2, L3, omega, isShow })
     if (validData.length === 0) {
         return (
             <div className={styles['container']}>
-                {/* ИСПРАВЛЕНО: Убран LaTeX, используется простой текст */}
+
                 <h3 className={styles['title']}>Графики ускорений aC, aC/Bᵗ, aC/Dᵗ (SVG)</h3>
                 <p className={styles['error-message']}>
                     Нет достаточных данных для построения графиков. Проверьте входные параметры.
@@ -240,7 +230,7 @@ export default function AccelerationGraphsSVG({ L0, L1, L2, L3, omega, isShow })
                         Угол &alpha; (°)
                     </text>
                     
-                    {/* ИСПРАВЛЕНО: м/с² как HTML-сущность (м/с&sup2;) */}
+
                     <text x={10} y={BASE_HEIGHT / 2} textAnchor="middle" fontSize="12" fill="#333" transform={`rotate(-90, 10, ${BASE_HEIGHT / 2})`}>
                         Ускорение (м/с&sup2;)
                     </text>

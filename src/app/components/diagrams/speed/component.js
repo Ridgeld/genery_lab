@@ -3,24 +3,20 @@ import React, { useMemo } from 'react';
 import { solveMechanism, buildVelocityForAngle } from '../../../utils/kinematics'; 
 import styles from './component.module.scss';
 
-// =================================================================
-// КОНФИГУРАЦИЯ ГРАФИКА
-// =================================================================
-const PADDING = 40;     // Отступы для осей
-const BASE_HEIGHT = 300; // Базовая высота графика (ширина будет 100%)
 
-// Цвета линий для графиков - легко изменить здесь
-const LINE_COLORS = ['#8884d8', '#82ca9d']; // Фиолетовый (Vcb), Зеленый (Vcd)
-// Вы можете добавить больше цветов, если будет больше линий
+const PADDING = 40;    
+const BASE_HEIGHT = 300;
+
+
+const LINE_COLORS = ['#8884d8', '#82ca9d'];
+
 
 // 8 положений: 0, 45, 90, ..., 315
 const EIGHT_POSITIONS = Array.from({ length: 8 }, (_, i) => i * 45);
 
 export default function VelocityGraphsSVG({ L0, L1, L2, L3, omega, isShow }) {
     
-    // =================================================================
-    // 1. ПЕРВЫЙ ХУК: Расчет всех сырых данных (логика из VelocityTable)
-    // =================================================================
+
     const tableData = useMemo(() => {
         if (![L0, L1, L2, L3].every(v => typeof v === 'number' && v > 0) || typeof omega !== 'number') {
             return [];
@@ -51,13 +47,10 @@ export default function VelocityGraphsSVG({ L0, L1, L2, L3, omega, isShow }) {
     
     const validData = tableData.filter(d => d.ok);
 
-    // =================================================================
-    // 2. ВТОРОЙ ХУК: Расчет координат SVG и меток
-    // Зависит от validData.
-    // =================================================================
+
     const { pointsData, yAxisLabels, zeroY, xLabels, viewBoxWidth } = useMemo(() => {
         
-        // Значения по умолчанию, если данных нет
+
         if (validData.length === 0) {
             return { 
                 pointsData: { Vcb: "", Vcd: "" }, // Объекты для линий
@@ -68,14 +61,8 @@ export default function VelocityGraphsSVG({ L0, L1, L2, L3, omega, isShow }) {
             };
         }
 
-        // Динамическое определение ширины SVG для viewBox
-        // В зависимости от того, сколько места реально занимает контент
-        // Это позволит SVG "растягиваться" на 100% ширины контейнера
-        const dynamicWidth = 600; // Можем использовать фиксированную ширину для расчетов, а SVG растянет
-                                   // Или можем попробовать вычислять её, но для 100% ширины лучше использовать 
-                                   // относительные значения в viewBox.
-                                   // Для упрощения, пока оставим 600 как "логическую" ширину для масштабирования.
-                                   // viewBox будет [0 0 600 300] и SVG будет масштабировать его.
+
+        const dynamicWidth = 600; 
 
         const maxAbsValue = validData.reduce((max, current) => {
             const absVcb = Math.abs(current.Vcb || 0);
@@ -127,9 +114,7 @@ export default function VelocityGraphsSVG({ L0, L1, L2, L3, omega, isShow }) {
         };
     }, [tableData]); 
     
-    // =================================================================
-    // 3. УСЛОВНЫЙ РЕНДЕРИНГ (после всех хуков)
-    // =================================================================
+
     
     if (!isShow) {
         return null;
@@ -146,15 +131,14 @@ export default function VelocityGraphsSVG({ L0, L1, L2, L3, omega, isShow }) {
         );
     }
     
-    // Деструктуризация результатов useMemo для удобства
-    // const { pointsData, yAxisLabels, zeroY, xLabels, viewBoxWidth } = useMemo(() => ({ pointsData, yAxisLabels, zeroY, xLabels, viewBoxWidth }), [pointsData, yAxisLabels, zeroY, xLabels, viewBoxWidth]);
+
 
 
     return (
         <div className={styles['container']}>
             <h3 className={styles['title']}>Графики скоростей Vcb и Vcd (SVG)</h3>
             
-            {/* SVG теперь имеет 100% ширины и фиксированную высоту */}
+
             <svg viewBox={`0 0 ${viewBoxWidth} ${BASE_HEIGHT}`} width="100%" height={BASE_HEIGHT}>
                 
                 {/* 1. Сетка и Оси */}
@@ -163,7 +147,7 @@ export default function VelocityGraphsSVG({ L0, L1, L2, L3, omega, isShow }) {
                     <line 
                         x1={PADDING} 
                         y1={zeroY} 
-                        x2={viewBoxWidth - PADDING} // Используем viewBoxWidth
+                        x2={viewBoxWidth - PADDING}
                         y2={zeroY} 
                         stroke="#000" 
                         strokeWidth="1" 
@@ -186,7 +170,7 @@ export default function VelocityGraphsSVG({ L0, L1, L2, L3, omega, isShow }) {
                     <rect 
                         x={PADDING} 
                         y={PADDING} 
-                        width={viewBoxWidth - 2 * PADDING} // Используем viewBoxWidth
+                        width={viewBoxWidth - 2 * PADDING} 
                         height={BASE_HEIGHT - 2 * PADDING} 
                         fill="none" 
                         stroke="#333" 

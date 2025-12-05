@@ -19,31 +19,49 @@ import ImpactPowerGraph from "./components/diagrams/impact/component";
 import ImpactPowerTable from "./components/tables/impact_table/component";
 
 export default function Home() {
+
   const [mechanismData, setMechanismData] = useState([
     { name: "L1", value: 0 },
     { name: "L2", value: 0 },
     { name: "L3", value: 0 },
     { name: "L0", value: 0 },
     { name: "angle", value: 90 },
-    { name: 'omega', value: 0},
+    { name: 'omega', value: 0.157},
     { name: 'L1_m', value: 1},
     { name: 'L2_m', value: 1},
     { name: 'L3_m', value: 1},
     { name: 'F_ext', value: 1},
   ]);
-  const [isInputShow, setIsInputShow] = useState(false);
-  const [isTableShow, setITablesShow] = useState(false);
-  const [isAccelerationShow, setIsAccelerationShow] = useState(false);
-  const [isDiagramsShow, setIsDiagramsShow] = useState(false)
+
+
+  const [views, setViews] = useState({
+    input: false,
+    table: false,
+    acceleration: false,
+    diagrams: false
+  });
+  
   const [isStop, setIsStop] = useState(true);
 
-  // Обновление всех данных механизма
+
+  const L1 = mechanismData[0]?.value ?? 0;
+  const L2 = mechanismData[1]?.value ?? 0;
+  const L3 = mechanismData[2]?.value ?? 0;
+  const L0 = mechanismData[3]?.value ?? 0;
+  const angle = mechanismData[4]?.value ?? 90;
+  const omega = mechanismData[5]?.value ?? 0.157;
+  const m1 = mechanismData[6]?.value ?? 1;
+  const m2 = mechanismData[7]?.value ?? 1;
+  const m3 = mechanismData[8]?.value ?? 1;
+  const F_ext = mechanismData[9]?.value ?? 1;
+
+
+
   const handleWorkPanelChange = (data) => {
     setMechanismData(data);
-    console.log(data)
+    console.log(data);
   };
 
-  // Универсальный обработчик изменения угла
   const handleAngleChange = (newAngle) => {
     setMechanismData((prev) => {
       const updated = [...prev];
@@ -57,23 +75,28 @@ export default function Home() {
   };
 
   const handleToolClick = (id) => {
-    if (id === 1) setIsInputShow(!isInputShow);
-    if (id === 2) setITablesShow(!isTableShow);
-    if (id === 3) setIsAccelerationShow(!isAccelerationShow)
-    if (id === 4) setIsDiagramsShow(!isDiagramsShow)
+    setViews(prev => ({
+      ...prev,
+      input: id === 1 ? !prev.input : prev.input,
+      table: id === 2 ? !prev.table : prev.table,
+      acceleration: id === 3 ? !prev.acceleration : prev.acceleration,
+      diagrams: id === 4 ? !prev.diagrams : prev.diagrams,
+    }));
   };
 
-  const handleButtonClick = (isStop) => {
-    setIsStop(isStop);
+  const handleButtonClick = (val) => {
+    setIsStop(val);
   };
+
+
 
   return (
     <div className={styles['container']}>
       <Header onButtonClick={handleButtonClick} />
       <Toolbar tools={tools} toolClick={handleToolClick}>
         <WorkPanel
-            isShow={isInputShow}
-            angle={mechanismData[4]?.value ?? 90}        
+            isShow={views.input}
+            angle={angle}        
             onAngleChange={handleAngleChange}       
             onDataChange={handleWorkPanelChange}
           />
@@ -83,117 +106,66 @@ export default function Home() {
           <div className={styles['group-row']}>
             <GraphicsPlace
               isStop={isStop}
-              L1={mechanismData[0]?.value ?? 0}
-              L2={mechanismData[1]?.value ?? 0}
-              L3={mechanismData[2]?.value ?? 0}
-              L0={mechanismData[3]?.value ?? 0}
-              angle={mechanismData[4]?.value ?? 90}
-              onAngleChange={handleAngleChange}             // обновление при анимации
+              L1={L1} L2={L2} L3={L3} L0={L0} angle={angle}
+              onAngleChange={handleAngleChange}
             />
-            <SpeedDiagram
-                L1={mechanismData[0]?.value ?? 0}
-                L2={mechanismData[1]?.value ?? 0}
-                L3={mechanismData[2]?.value ?? 0}
-                L0={mechanismData[3]?.value ?? 0}
-                angle={mechanismData[4]?.value ?? 90}         // ← единый источник
-                omega={mechanismData[5]?.value ?? 0.157}
-              />
+            <SpeedDiagram 
+              L1={L1} L2={L2} L3={L3} L0={L0} angle={angle} omega={omega}
+            />
           </div>
-            <VelocityTable
-                L1={mechanismData[0]?.value ?? 0}
-                L2={mechanismData[1]?.value ?? 0}
-                L3={mechanismData[2]?.value ?? 0}
-                L0={mechanismData[3]?.value ?? 0}
-                omega={mechanismData[5]?.value ?? 0.157}
-                isShow={isTableShow}
+
+          <VelocityTable
+            L1={L1} L2={L2} L3={L3} L0={L0} omega={omega}
+            isShow={views.table}
+          />
+
+          <div className={styles['group-row']}>
+            {views.acceleration && <>
+              <AccelerationDiagram 
+                L1={L1} L2={L2} L3={L3} L0={L0} angle={angle} omega={omega}
+              />
+              <AccelerationTable 
+                L1={L1} L2={L2} L3={L3} L0={L0} angle={angle} omega={omega}
+              />
+            </>}
+          </div>
+
+          <div className={styles['group-row']}>
+            <VelocityGraphsSVG 
+              L1={L1} L2={L2} L3={L3} L0={L0} omega={omega} 
+              isShow={views.diagrams}
             />
-            <div className={styles['group-row']}>
-              {isAccelerationShow && <>
-              
-                <AccelerationDiagram
-                  L1={mechanismData[0]?.value ?? 0}
-                  L2={mechanismData[1]?.value ?? 0}
-                  L3={mechanismData[2]?.value ?? 0}
-                  L0={mechanismData[3]?.value ?? 0}
-                  angle={mechanismData[4]?.value ?? 90}        
-                  omega={mechanismData[5]?.value ?? 0.157}/>
-                <AccelerationTable
-                  L1={mechanismData[0]?.value ?? 0}
-                  L2={mechanismData[1]?.value ?? 0}
-                  L3={mechanismData[2]?.value ?? 0}
-                  L0={mechanismData[3]?.value ?? 0}
-                  angle={mechanismData[4]?.value ?? 90}         
-                  omega={mechanismData[5]?.value ?? 0.157}/>
-                </>}
-            </div>
-            <div className={styles['group-row']}>
-              <VelocityGraphsSVG
-                L1={mechanismData[0]?.value ?? 0}
-                L2={mechanismData[1]?.value ?? 0}
-                L3={mechanismData[2]?.value ?? 0}
-                L0={mechanismData[3]?.value ?? 0}
-                omega={mechanismData[5]?.value ?? 0.157}
-                isShow={isDiagramsShow}/>
-              <AccelerationGraphsSVG
-                L1={mechanismData[0]?.value ?? 0}
-                L2={mechanismData[1]?.value ?? 0}
-                L3={mechanismData[2]?.value ?? 0}
-                L0={mechanismData[3]?.value ?? 0}
-                angle={mechanismData[4]?.value ?? 90} 
-                omega={mechanismData[5]?.value ?? 0.157}
-                isShow={isDiagramsShow}/>
-            </div>
-            <div className={styles['group-row']}>
-              <TorquesGraphsSVG
-                L1={mechanismData[0]?.value ?? 0}
-                L2={mechanismData[1]?.value ?? 0}
-                L3={mechanismData[2]?.value ?? 0}
-                L0={mechanismData[3]?.value ?? 0}
-                omega={mechanismData[5]?.value ?? 0.157}
-                m1={mechanismData[6]?.value ?? 1}
-                m2={mechanismData[7]?.value ?? 1}
-                m3={mechanismData[8]?.value ?? 1}
-                F_ext={mechanismData[9]?.value ?? 1} 
-                isShow={isDiagramsShow}/>
-              <DynamicsTable
-                L1={mechanismData[0]?.value ?? 0}
-                L2={mechanismData[1]?.value ?? 0}
-                L3={mechanismData[2]?.value ?? 0}
-                L0={mechanismData[3]?.value ?? 0}
-                omega={mechanismData[5]?.value ?? 0.157}
-                m1={mechanismData[6]?.value ?? 1}
-                m2={mechanismData[7]?.value ?? 1}
-                m3={mechanismData[8]?.value ?? 1}
-                F_ext={mechanismData[9]?.value ?? 1} 
-                isShow={isDiagramsShow}/>
-            </div>
-            <div className={styles['group-row']}>
-              <ImpactPowerGraph
-                L1={mechanismData[0]?.value ?? 0}
-                L2={mechanismData[1]?.value ?? 0}
-                L3={mechanismData[2]?.value ?? 0}
-                L0={mechanismData[3]?.value ?? 0}
-                omega={mechanismData[5]?.value ?? 0.157}
-                m1={mechanismData[6]?.value ?? 1}
-                m2={mechanismData[7]?.value ?? 1}
-                m3={mechanismData[8]?.value ?? 1}
-                F_ext={mechanismData[9]?.value ?? 1} 
-                isShow={isDiagramsShow}/>
-              <ImpactPowerTable
-                L1={mechanismData[0]?.value ?? 0}
-                L2={mechanismData[1]?.value ?? 0}
-                L3={mechanismData[2]?.value ?? 0}
-                L0={mechanismData[3]?.value ?? 0}
-                omega={mechanismData[5]?.value ?? 0.157}
-                m1={mechanismData[6]?.value ?? 1}
-                m2={mechanismData[7]?.value ?? 1}
-                m3={mechanismData[8]?.value ?? 1}
-                F_ext={mechanismData[9]?.value ?? 1} 
-                isShow={isDiagramsShow}/>
-            </div>
-            {/* <div className={styles['group-row']}>
-              <MySelfMechanism/>
-            </div> */}
+            <AccelerationGraphsSVG 
+              L1={L1} L2={L2} L3={L3} L0={L0} angle={angle} omega={omega} 
+              isShow={views.diagrams}
+            />
+          </div>
+
+          <div className={styles['group-row']}>
+            <TorquesGraphsSVG 
+              L1={L1} L2={L2} L3={L3} L0={L0} omega={omega} 
+              m1={m1} m2={m2} m3={m3} F_ext={F_ext} 
+              isShow={views.diagrams}
+            />
+            <DynamicsTable 
+              L1={L1} L2={L2} L3={L3} L0={L0} omega={omega} 
+              m1={m1} m2={m2} m3={m3} F_ext={F_ext} 
+              isShow={views.diagrams}
+            />
+          </div>
+
+          <div className={styles['group-row']}>
+            <ImpactPowerGraph 
+              L1={L1} L2={L2} L3={L3} L0={L0} omega={omega} 
+              m1={m1} m2={m2} m3={m3} F_ext={F_ext} 
+              isShow={views.diagrams}
+            />
+            <ImpactPowerTable 
+              L1={L1} L2={L2} L3={L3} L0={L0} omega={omega} 
+              m1={m1} m2={m2} m3={m3} F_ext={F_ext} 
+              isShow={views.diagrams}
+            />
+          </div>
       </div>
     </div>
   );

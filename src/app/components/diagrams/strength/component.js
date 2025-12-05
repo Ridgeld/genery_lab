@@ -8,10 +8,10 @@ const BASE_HEIGHT = 400;
 const EIGHT_POSITIONS = Array.from({ length: 8 }, (_, i) => i * 45);
 
 const LINE_COLORS = ['#3f51b5', '#00bcd4', '#ff9800']; 
-// Возвращаем SCALE_FACTOR к 1000 (10^3) для отображения в кН·м
+
 const SCALE_FACTOR = 1000; 
 
-// Принимаем только 3 массы: m1, m2, m3, плюс внешняя сила F_ext
+
 export default function TorquesGraphsSVG({ 
     L0, L1, L2, L3,
     omega, m1, m2, m3, F_ext,
@@ -25,7 +25,7 @@ export default function TorquesGraphsSVG({
     const sub = (a, b) => ({ x: a.x - b.x, y: a.y - b.y });
     const mul = (v, s) => ({ x: v.x * s, y: v.y * s });
     const dot = (a, b) => a.x * b.x + a.y * b.y;
-    // const cross = (a, b) => a.x * b.y - a.y * b.x; // |a x b| для 2D
+
 
     // Длины в метрах (для моментов инерции и динамики)
     const L0_m = L0 * C_TO_M;
@@ -39,9 +39,7 @@ export default function TorquesGraphsSVG({
 
     const externalForce = F_ext === undefined || F_ext === null ? 0 : F_ext;
 
-    // =================================================================
-    // ЕДИНЫЙ БЛОК РАСЧЕТА (КИНЕМАТИКА + ДИНАМИКА)
-    // =================================================================
+
     const fullTableData = useMemo(() => {
         // Проверка входных данных
         if (![L0, L1, L2, L3].every(v => typeof v === 'number' && v > 0) || 
@@ -50,11 +48,7 @@ export default function TorquesGraphsSVG({
             return [];
         }
 
-        // --- 1. ФУНКЦИИ РАСЧЕТА, ВСТРОЕННЫЕ ВНУТРИ COMPONENTА ---
 
-        /**
-         * 1.1. Расчет положения (solveMechanism logic). Возвращает координаты в СМ, углы в Y Up.
-         */
         function solveMechanismInternal(L0_cm, L1_cm, L2_cm, L3_cm, angleDeg) {
             const A = { x: 0, y: 0 };
             const D = { x: L0_cm, y: 0 }; 
@@ -93,9 +87,7 @@ export default function TorquesGraphsSVG({
             return { A, B, C, D, valid: true, angleAB: theta, angleBC, angleCD };
         }
 
-        /**
-         * 1.2. Расчет скоростей (buildVelocityForAngle logic). Возвращает omega и Vc в СМ/С.
-         */
+
         function buildVelocityInternal(sol, L1_cm, omega) {
             const { C, D, angleBC, angleCD, valid } = sol;
             if (!valid) return { valid: false };
@@ -141,9 +133,7 @@ export default function TorquesGraphsSVG({
             };
         }
 
-        /**
-         * 1.3. Расчет ускорений (buildAccelerationForAngle logic). Возвращает epsilon и aC в СМ/С^2.
-         */
+
         function buildAccelerationInternal(sol, vdata, L1_cm, L2_cm, L3_cm, omega) {
             const { angleBC, angleCD, valid } = sol;
             if (!valid) return { valid: false };
@@ -153,7 +143,7 @@ export default function TorquesGraphsSVG({
 
             // 1. Ускорение B (aB) - только нормальное, т.к. omega = const (epsilon=0)
             const aB_mag = omega * omega * L1_cm;
-            const theta_aB = sol.angleAB + Math.PI; // aB направлено к A (на 180deg от B)
+            const theta_aB = sol.angleAB + Math.PI;
             const aB_vec_cms = {
                 x: aB_mag * Math.cos(theta_aB),
                 y: aB_mag * Math.sin(theta_aB)
@@ -179,9 +169,7 @@ export default function TorquesGraphsSVG({
             const Ax = aC_D_n_vec.x - aC_B_n_vec.x - aB_vec_cms.x;
             const Ay = aC_D_n_vec.y - aC_B_n_vec.y - aB_vec_cms.y;
 
-            // 4. Решаем систему для epsilonBC (x) и epsilonCD (y)
-            // | L2*sin(BC)   -L3*sin(CD) | * | epsilonBC | = | Ax |
-            // | -L2*cos(BC)   L3*cos(CD) |   | epsilonCD |   | Ay |
+
             
             const a = L2_cm * Math.sin(angleBC);
             const b = -L3_cm * Math.sin(angleCD);
@@ -196,15 +184,13 @@ export default function TorquesGraphsSVG({
             const epsilonBC = (Ax * d - b * Ay) / det;
             const epsilonCD = (a * Ay - Ax * c) / det;
 
-            // 5. Полное ускорение C (для проверки или дальнейших расчетов)
-            // aC = aD + aC/D_n + aC/D_t
-            // aC/D_t: L3 * epsilonCD * u_perp_CD
+
             const aC_D_t_vec = {
                 x: -epsilonCD * L3_cm * Math.sin(angleCD),
                 y: epsilonCD * L3_cm * Math.cos(angleCD)
             };
             const aC_vec = add(aC_D_n_vec, aC_D_t_vec); 
-            // aC_vec теперь в см/с^2.
+
 
             console.log(epsilonBC)
             console.log(epsilonCD)
@@ -217,19 +203,17 @@ export default function TorquesGraphsSVG({
             };
         }
 
-        /**
-         * 1.4. Расчет моментов (buildTorquesForAngle logic). Возвращает моменты в Н·м.
-         */
+
         function buildTorquesInternal(sol, vdata, adata, L1_m, L2_m, L3_m, m2, m3, J2, J3, F) {
             if (!adata || !adata.valid) return { valid: false };
 
             // --- Перевод координат и ускорений в метры (СИ) ---
             // Координаты (см -> м)
-            const B_m = { x: sol.B.x * C_TO_M, y: -sol.B.y * C_TO_M }; // ВАЖНО: Перевод Y Down -> Y Up
-            const C_m = { x: sol.C.x * C_TO_M, y: -sol.C.y * C_TO_M }; // ВАЖНО: Перевод Y Down -> Y Up
-            const D_m = { x: sol.D.x * C_TO_M, y: -sol.D.y * C_TO_M }; // ВАЖНО: Перевод Y Down -> Y Up
+            const B_m = { x: sol.B.x * C_TO_M, y: -sol.B.y * C_TO_M }; 
+            const C_m = { x: sol.C.x * C_TO_M, y: -sol.C.y * C_TO_M }; 
+            const D_m = { x: sol.D.x * C_TO_M, y: -sol.D.y * C_TO_M }; 
             
-            // Ускорения (см/с² -> м/с²). Они уже в системе Y Up.
+
             const aB_m = { x: adata.aB_vec.x * C_TO_M, y: adata.aB_vec.y * C_TO_M };
             
             // --- Координаты центров масс (в метрах, Y Up) ---
@@ -288,13 +272,13 @@ export default function TorquesGraphsSVG({
             const Fi3_y = -m3 * aS3_y;
 
             // --- Моменты сил инерции вращения (в Н·м) ---
-            const Mi2 = -J2 * adata.epsilonBC; // Mi = -J * epsilon
+            const Mi2 = -J2 * adata.epsilonBC;
             const Mi3 = -J3 * adata.epsilonCD; 
 
             // --- Момент внешней силы F (в Н·м) ---
             // F приложена к C по оси X (F_ext).
             const F_vec = { x: externalForce, y: 0 }; 
-            // M_F_A = rC x F
+
             const M_F_A = C_m.x * F_vec.y - C_m.y * F_vec.x; 
 
             // --- Приводящий момент Md (в Н·м) ---
@@ -316,7 +300,7 @@ export default function TorquesGraphsSVG({
             };
         }
         
-        // --- 2. ИТЕРАЦИЯ И РАСЧЕТ ДАННЫХ ДЛЯ ГРАФИКА ---
+
 
         return EIGHT_POSITIONS.map(angle => {
             // КИНЕМАТИКА (см)
@@ -333,13 +317,13 @@ export default function TorquesGraphsSVG({
             }
 
             // УСКОРЕНИЕ (см/с^2)
-            // L2, L3 в см, но для внутренних расчетов ускорений нужна L2_cm, L3_cm
+
             const adata = buildAccelerationInternal(sol, vdata, L1, L2, L3, omega); 
             if (!adata.valid) {
                 return { angle, Md: null, MJ2: null, MJ3: null, ok: false, error: "Ускор. невозм." };
             }
             
-            // ДИНАМИКА (Н·м) - передаем длины в МЕТРАХ!
+
             const Tdata = buildTorquesInternal(sol, vdata, adata, L1_m, L2_m, L3_m, m2, m3, J2, J3, externalForce);
             
             if (!Tdata.valid) {
@@ -356,7 +340,7 @@ export default function TorquesGraphsSVG({
         });
     }, [L0, L1, L2, L3, omega, m1, m2, m3, externalForce, L0_m, L1_m, L2_m, L3_m, J2, J3]); 
     
-    // ИСПРАВЛЕНИЕ: Фильтруем невалидные точки и NaN/Infinity
+
     const validData = fullTableData.filter(d => 
         d.ok && 
         isFinite(d.Md) && 
@@ -364,9 +348,7 @@ export default function TorquesGraphsSVG({
         isFinite(d.MJ3)
     );
 
-    // =================================================================
-    // 3. Расчет координат и меток
-    // =================================================================
+
     const { 
         pointsData: pData, 
         yAxisLabels: yLabels, 

@@ -10,9 +10,7 @@ export default function DynamicsTable8Positions({
     omega, 
     m1, m2, m3, F_ext, isShow
 }) {
-    // =================================================================
-    // ФУНКЦИЯ РАСЧЕТА ДЛЯ ОДНОГО УГЛА
-    // =================================================================
+
     const calculateRow = (angle) => {
         // Проверка типов
         if (![L0, L1, L2, L3].every(v => typeof v === 'number' && v > 0)) {
@@ -127,9 +125,7 @@ export default function DynamicsTable8Positions({
         };
     };
 
-    // =================================================================
-    // ГЕНЕРАЦИЯ ДАННЫХ ДЛЯ 8 ПОЛОЖЕНИЙ
-    // =================================================================
+
     const tableRows = useMemo(() => {
         return POSITIONS.map(angle => {
             const data = calculateRow(angle);

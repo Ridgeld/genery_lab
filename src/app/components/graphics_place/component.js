@@ -7,12 +7,12 @@ import styles from './component.module.scss'
 const CONST_CANVAS_WIDTH = 800;
 const CONST_CANVAS_HEIGHT = 400;
 
-const scaleMech = 10; // 1 см -> 10 px
+
 
 
 const colors = ['#105CFF', '#FF10CF', '#10FF78']
 
-// Вспомогательная функция для рисования одного звена.
+
 function drawLink(mctx, p, q, color) {
     mctx.lineWidth = 10; 
     mctx.strokeStyle = color;
@@ -98,34 +98,31 @@ export default function GraphicsPlace({ L0, L1, L2, L3, angle, isStop, onAngleCh
     const animIdRef = useRef(null);
     const angleRef = useRef(angle);
 
-    const omega = 1; // скорость вращения в рад/с
+    const omega = 1; // скорость вращения
     const dt = 1 / 60;
     
-    // Используем константу как начальное значение для высоты
+
     const [canvasSize, setCanvasSize] = useState({ width: CONST_CANVAS_WIDTH, height: CONST_CANVAS_HEIGHT });
     
-    // 🔹 Пересчитываем ширину при изменении размера окна
+    // Пересчитываем ширину при изменении размера окна
     useEffect(() => {
         const updateCanvasSize = () => {
-            // Получаем ширину родительского контейнера или окна
+
             const containerWidth = canvasRef.current.parentElement.clientWidth;
-            // Устанавливаем ширину, например, 90% от родителя, но не более 800px
+
             const newWidth = Math.min(containerWidth, 800); 
-            
-            // Если вы хотите сделать его адаптивным к экрану:
-            // const screenWidth = window.innerWidth;
-            // const newWidth = screenWidth > 600 ? screenWidth / 3 : screenWidth - 40;
+
             
             setCanvasSize(prev => ({ width: newWidth, height: CONST_CANVAS_HEIGHT }));
         };
 
-        // Запускаем при монтировании и при изменении размера окна
+
         updateCanvasSize();
         window.addEventListener('resize', updateCanvasSize);
         return () => window.removeEventListener('resize', updateCanvasSize);
-    }, []); // Зависимости нет, выполняется один раз
+    }, []); 
 
-    // Перерисовка при изменении canvasSize или любых входных параметров
+
     useEffect(() => {
         if ([L0, L1, L2, L3, angle].every(v => typeof v === 'number' && !isNaN(v))) {
             drawMechanismReact(
@@ -136,14 +133,14 @@ export default function GraphicsPlace({ L0, L1, L2, L3, angle, isStop, onAngleCh
         }
     }, [L0, L1, L2, L3, angle, canvasSize.width, canvasSize.height]); // Зависимости
 
-    // Логика анимации (только изменение угла)
+
     useEffect(() => {
         if (!isStop) {
-          // ▶️ Запуск анимации
+
           const step = () => {
-            // ... логика анимации ...
+
             angleRef.current = (angleRef.current + (omega * dt * 180 / Math.PI)) % 360;
-            // Вызываем отрисовку с динамическими размерами
+
             drawMechanismReact(
                 canvasRef.current, 
                 L0, L1, L2, L3, angleRef.current, 
@@ -158,14 +155,14 @@ export default function GraphicsPlace({ L0, L1, L2, L3, angle, isStop, onAngleCh
           };
           animIdRef.current = requestAnimationFrame(step);
         } else {
-          // ⏸ Остановка анимации
+
           if (animIdRef.current) {
             cancelAnimationFrame(animIdRef.current);
             animIdRef.current = null;
           }
         }
 
-        // очистка при размонтировании
+
         return () => {
           if (animIdRef.current) {
             cancelAnimationFrame(animIdRef.current);
@@ -178,14 +175,12 @@ export default function GraphicsPlace({ L0, L1, L2, L3, angle, isStop, onAngleCh
     return (
         <canvas 
             ref={canvasRef} 
-            // 🎯 Устанавливаем атрибуты width/height из стейта canvasSize (критично!)
+
             width={canvasSize.width} 
             height={canvasSize.height}
             className={styles['graphic']}
             style={{
-                // CSS width/height теперь может быть использован для дополнительного масштабирования
-                // или может быть установлен на 100% для заполнения контейнера.
-                // В данном случае, просто приводим к px.
+
                 width: `${canvasSize.width}px`, 
                 height: `${canvasSize.height}px`,
                 display: 'block',

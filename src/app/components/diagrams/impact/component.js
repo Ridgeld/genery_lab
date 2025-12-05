@@ -2,12 +2,11 @@
 import React, { useMemo } from 'react';
 import styles from './component.module.scss'
 
-// =================================================================
-// КОНФИГУРАЦИЯ ГРАФИКА
-// =================================================================
+
 const PADDING = 40;
 const BASE_HEIGHT = 400;
-// Для плавного графика берем шаг 5 градусов (0, 5, 10 ... 360)
+
+
 const GRAPH_STEPS = Array.from({ length: 73 }, (_, i) => i * 5);
 
 const LINE_COLORS = {
@@ -26,9 +25,7 @@ export default function ImpactPowerGraph({
     const sub = (a, b) => ({ x: a.x - b.x, y: a.y - b.y });
     const len = (v) => Math.hypot(v.x, v.y);
 
-    // =================================================================
-    // 1. БЛОК РАСЧЕТОВ ФИЗИКИ
-    // =================================================================
+
     const chartData = useMemo(() => {
         // Валидация входных данных
         if (![L0, L1, L2, L3].every(v => typeof v === 'number' && v > 0) ||
@@ -37,9 +34,7 @@ export default function ImpactPowerGraph({
             return [];
         }
 
-        // --- Константы для формул ---
-        // 1. Частота вращения кривошипа f (Гц)
-        // omega - рад/с. f = omega / 2PI
+
         const freq = Math.abs(omega) / (2 * Math.PI);
 
         // 2. Момент инерции коромысла (Звено 3) относительно точки подвеса D (J0)
@@ -87,15 +82,12 @@ export default function ImpactPowerGraph({
             const angleBC = Math.atan2(-(Cy - By), Cx - Bx);
             const angleAB = theta;
 
-            // --- Расчет скоростей (Аналог скоростей) ---
-            // Решаем систему для omegaBC и omegaCD
-            // Vb = omega * L1
+
             const Vb_x = -omega * L1 * Math.sin(angleAB); // проекции вектора скорости B
             const Vb_y = omega * L1 * Math.cos(angleAB);
 
-            // Матрица Якоби (упрощенно через проекции на звенья)
-            // L2*w2*sin(phi2) + L3*w3*sin(phi3) = ... 
-            // Используем формулы из оригинала через определитель
+
+
             const a_mat = -L2 * Math.sin(angleBC);
             const b_mat = L3 * Math.sin(angleCD);
             const c_mat = L2 * Math.cos(angleBC);
@@ -107,14 +99,7 @@ export default function ImpactPowerGraph({
             const RHS_x = -Vb_x; // Right Hand Side уравнений
             const RHS_y = -Vb_y;
 
-            // Решаем систему методом Крамера или подстановкой (как в оригинале)
-            // В оригинале: 
-            // Vx = -Vb_vec.x; Vy = -Vb_vec.y;
-            // omegaBC = (Vx * d - b * Vy) / det;
-            // omegaCD = (a * Vy - Vx * c) / det;
-            
-            // Внимание: знаки в оригинале зависели от системы координат. 
-            // Воспроизводим логику оригинала:
+
             const Vb_mag = omega * L1; 
             const theta_Vb = angleAB + Math.PI / 2;
             const Vb_vec_x = Vb_mag * Math.cos(theta_Vb);
@@ -136,8 +121,7 @@ export default function ImpactPowerGraph({
                 return { angle, A_ud: 0, N_ud: 0, valid: false };
             }
 
-            // Формула (4): A_ud = (J0 * omega^2) / 2
-            // Используем omegaCD (скорость коромысла), так как инерция коромысла
+
             const w_rocker = kin.omegaCD;
             const A_ud = (J0 * w_rocker * w_rocker) / 2;
 
@@ -156,9 +140,7 @@ export default function ImpactPowerGraph({
 
     }, [L0, L1, L2, L3, omega, m3]);
 
-    // =================================================================
-    // 2. ПОДГОТОВКА SVG (Масштабирование)
-    // =================================================================
+
     const svgData = useMemo(() => {
         const dynamicWidth = 700;
         const chartW = dynamicWidth - 2 * PADDING;
