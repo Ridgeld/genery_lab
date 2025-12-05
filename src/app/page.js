@@ -13,7 +13,6 @@ import AccelerationTable from "./components/tables/acceleration_table/component"
 import VelocityGraphsSVG from "./components/diagrams/speed/component";
 import AccelerationGraphsSVG from "./components/diagrams/accelerate/component";
 import TorquesGraphsSVG from "./components/diagrams/strength/component";
-import MySelfMechanism from "./components/test/component";
 import DynamicsTable from "./components/tables/torque_table/component";
 import ImpactPowerGraph from "./components/diagrams/impact/component";
 import ImpactPowerTable from "./components/tables/impact_table/component";
