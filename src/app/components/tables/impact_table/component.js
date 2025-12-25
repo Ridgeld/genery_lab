@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import styles from './component.module.scss'; 
 import DefaultButton from '../../buttons/default_button/component';
 
-
 const POSITIONS = Array.from({ length: 8 }, (_, i) => i * 45);
 
 export default function ImpactPowerTable({ 
@@ -12,63 +11,74 @@ export default function ImpactPowerTable({
     m1, m2, m3, isShow
 }) {
 
-    const calculateRow = (angle) => {
+    // Функция для отображения очень маленьких чисел
+    const formatTableValue = (val) => {
+        if (val === 0) return "0";
+        const absV = Math.abs(val);
+        if (absV < 0.001) return val.toExponential(2); // Например: 1.23e-5
+        return val.toFixed(4);
+    };
 
-        if (![L0, L1, L2, L3].every(v => typeof v === 'number' && v > 0) || 
-            typeof omega !== 'number' || 
-            typeof m3 !== 'number') {
+    const calculateRow = (angle) => {
+        // Проверка входных данных
+        if (![L0, L1, L2, L3, omega, m3].every(v => typeof v === 'number' && !isNaN(v))) {
             return { valid: false, error: "Err" };
         }
 
         const C_TO_M = 0.01; 
         const toRad = (deg) => deg * Math.PI / 180;
         
+        // Перевод в метры для корректных Джоулей
+        const l0 = L0 * C_TO_M;
+        const l1 = L1 * C_TO_M;
+        const l2 = L2 * C_TO_M;
+        const l3 = L3 * C_TO_M;
 
-        const L3_m = L3 * C_TO_M;
-
-        const J0 = (m3 * L3_m * L3_m) / 3;
-        
+        // Момент инерции коромысла (J0)
+        const J0 = (m3 * l3 * l3) / 3;
         const freq = Math.abs(omega) / (2 * Math.PI);
 
-        const theta = toRad(angle);
-        const L0_cm = L0;
+        const theta1 = toRad(angle);
         
-        const D = { x: L0_cm, y: 0 };
-        const B = { x: L1 * Math.cos(theta), y: -L1 * Math.sin(theta) };
+        // Координаты шарнира B
+        const Bx = l1 * Math.cos(theta1);
+        const By = l1 * Math.sin(theta1);
         
-        const dx = D.x - B.x; 
-        const dy = D.y - B.y;
+        // Расстояние до опоры D(l0, 0)
+        const dx = l0 - Bx;
+        const dy = -By;
         const d = Math.hypot(dx, dy);
 
-        if (d > L2 + L3 || d < Math.abs(L2 - L3) || d === 0) {
+        // Проверка собираемости
+        if (d > l2 + l3 || d < Math.abs(l2 - l3) || d === 0) {
             return { valid: false, error: "Геом." }; 
         }
         
-        const a_dist = (L2*L2 - L3*L3 + d*d) / (2*d);
-        const h = Math.sqrt(Math.max(0, L2*L2 - a_dist*a_dist));
-        const xm = B.x + a_dist * dx / d;
-        const ym = B.y + a_dist * dy / d;
-        const C = { x: xm + (h * dy) / d, y: ym - (h * dx) / d };
+        // Нахождение точки C (пересечение окружностей)
+        const a_dist = (l2*l2 - l3*l3 + d*d) / (2*d);
+        const h2 = l2*l2 - a_dist*a_dist;
+        const h = Math.sqrt(Math.max(0, h2));
 
-        const angleBC = Math.atan2(-(C.y - B.y), C.x - B.x);
-        const angleCD = Math.atan2(-(C.y - D.y), C.x - D.x);
+        const xm = Bx + a_dist * dx / d;
+        const ym = By + a_dist * dy / d;
+        const Cx = xm - (h * dy) / d;
+        const Cy = ym + (h * dx) / d;
 
-        const Vb_mag = omega * L1; 
-        const theta_Vb = theta + Math.PI / 2;
-        const Vx = -(Vb_mag * Math.cos(theta_Vb)); 
-        const Vy = -(Vb_mag * Math.sin(theta_Vb));
+        // Углы для скоростей
+        const theta2 = Math.atan2(Cy - By, Cx - Bx);
+        const theta3 = Math.atan2(Cy, Cx - l0);
 
-        const aM = -L2 * Math.sin(angleBC);
-        const bM = L3 * Math.sin(angleCD);
-        const cM = L2 * Math.cos(angleBC);
-        const dM = -L3 * Math.cos(angleCD);
-        const detV = aM * dM - bM * cM;
+        const sinDiff = Math.sin(theta3 - theta2);
         
-        if (Math.abs(detV) < 1e-5) return { valid: false, error: "Мертв." };
+        // Особое положение (мертвая точка)
+        if (Math.abs(sinDiff) < 0.001) {
+            return { valid: false, error: "Особое" };
+        }
         
-        const omegaCD = (aM * Vy - Vx * cM) / detV;
+        // Угловая скорость коромысла
+        const omegaCD = (omega * l1 * Math.sin(theta1 - theta2)) / (l3 * sinDiff);
 
-        const A_ud = (J0 * omegaCD * omegaCD) / 2;
+        const A_ud = 0.5 * J0 * omegaCD * omegaCD;
         const N_ud = freq * A_ud;
 
         return {
@@ -80,56 +90,39 @@ export default function ImpactPowerTable({
         };
     };
 
-
     const tableRows = useMemo(() => {
         return POSITIONS.map(angle => {
             const data = calculateRow(angle);
             return { angle, ...data };
         });
-    }, [L0, L1, L2, L3, omega, m1, m2, m3]);
+    }, [L0, L1, L2, L3, omega, m3]);
 
-    // Функция экспорта в CSV
     const exportToCSV = () => {
-        const headers = [
-            "Угол (град)", 
-            "omega CD (рад/с)", 
-            "J0 (кг·м²)", 
-            "A уд (Работа) [Дж]",
-            "N уд (Мощность) [Вт]"
-        ];
-
+        const headers = ["Угол (град)", "omega3 (рад/с)", "J0 (кг·м2)", "A уд (Дж)", "N уд (Вт)"];
         const rows = tableRows.map(row => {
-            if (!row.valid) return [row.angle, "Ошибка", "", "", ""];
+            if (!row.valid) return [row.angle, row.error, "", "", ""];
             return [
                 row.angle,
-                row.omegaCD.toFixed(4),
+                row.omegaCD.toFixed(6),
                 row.J0.toExponential(4), 
-                row.A_ud.toFixed(4),
-                row.N_ud.toFixed(4)
+                row.A_ud.toExponential(4),
+                row.N_ud.toExponential(4)
             ];
         });
 
-        const csvContent = [
-            headers.join(";"),
-            ...rows.map(r => r.join(";"))
-        ].join("\n");
-
+        const csvContent = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
         const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "impact_power_8_positions.csv");
-        document.body.appendChild(link);
+        link.setAttribute("download", "impact_data.csv");
         link.click();
-        document.body.removeChild(link);
     };
 
     if (!isShow) return null;
 
     return (
         <div className={styles.container}>
-
-
             <h2 className={styles.title}>Таблица: Энергия и Мощность удара</h2>
             
             <table className={styles.table}>
@@ -146,17 +139,20 @@ export default function ImpactPowerTable({
                     {tableRows.map((row, i) => (
                         <tr key={i}>
                             <td>{row.angle}°</td>
-                            
                             {row.valid ? (
                                 <>
                                     <td>{row.omegaCD.toFixed(3)}</td>
                                     <td>{row.J0.toExponential(2)}</td>
-                                    <td style={{ fontWeight: 'bold', color: '#e91e63' }}>{row.A_ud.toFixed(3)}</td>
-                                    <td style={{ fontWeight: 'bold', color: '#673ab7' }}>{row.N_ud.toFixed(3)}</td>
+                                    <td style={{ fontWeight: 'bold', color: '#e91e63' }}>
+                                        {formatTableValue(row.A_ud)}
+                                    </td>
+                                    <td style={{ fontWeight: 'bold', color: '#673ab7' }}>
+                                        {formatTableValue(row.N_ud)}
+                                    </td>
                                 </>
                             ) : (
-                                <td colSpan="4" className={styles.error}>
-                                    {row.error === "Геом." ? "Геом. невозм." : "Особое положение"}
+                                <td colSpan="4" style={{ color: '#ff4d4f', fontStyle: 'italic', textAlign: 'center' }}>
+                                    {row.error === "Геом." ? "Разрыв цепи" : "Особое положение"}
                                 </td>
                             )}
                         </tr>
@@ -164,7 +160,7 @@ export default function ImpactPowerTable({
                 </tbody>
             </table>
 
-            <div className={styles['button-wrapper']}>
+            <div className={styles['button-wrapper']} style={{ marginTop: '20px' }}>
                 <DefaultButton
                     name={'Скачать таблицу (CSV)'}
                     onClick={exportToCSV}
