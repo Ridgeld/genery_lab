@@ -497,4 +497,5 @@ export default function TorquesGraphsSVG({
             </svg>
         </div>
     );
+    
 }
