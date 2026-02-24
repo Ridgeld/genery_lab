@@ -8,7 +8,7 @@ const GRAPH_STEPS = Array.from({ length: 73 }, (_, i) => i * 5);
 
 const LINE_COLORS = {
     A: '#e91e63',
-    N: '#00bcd4'  
+    N: '#673AB7'  
 };
 
 export default function ImpactPowerGraph({
