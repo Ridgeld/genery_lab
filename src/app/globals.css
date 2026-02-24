@@ -1,27 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Noto+Sans+Mono:wght@100..900&display=swap');
-*{
+
+* {
   font-family: "Noto Sans Mono", serif;
   font-weight: bold;
   box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
+
 :root {
-  --active: '#105CFF';
-  --background: #ffffff;
+  --active: #105CFF; /* Убрал лишние кавычки */
+  --background: #000000; /* Теперь фон всегда чисто черный. Если нужен темно-серый, используй #0a0a0a */
   --primary: #fff;
   --secondary: #2a2a2a;
   --third: #818181;
-  --foreground: #171717;
+  --foreground: #ededed; /* Светлый текст по умолчанию, чтобы его было видно на черном фоне */
   --elements: #0c0c0c;
   --border: #252525;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark; /* Принудительно включаем темную тему для системных элементов браузера */
 }
 
 html,
@@ -41,21 +40,17 @@ body {
   background: var(--background);
 }
 
-h2{
+h2 {
   line-height: 2px;
 }
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0; 
 }
+
 a {
   color: inherit;
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
 }
