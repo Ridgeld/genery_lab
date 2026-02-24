@@ -2,7 +2,6 @@
 import React, { useMemo } from 'react';
 import styles from './component.module.scss';
 
-// Увеличил PADDING до 50, чтобы метки с минусами/плюсами точно помещались
 const PADDING = 50;     
 const BASE_HEIGHT = 400; 
 const EIGHT_POSITIONS = Array.from({ length: 8 }, (_, i) => i * 45);
@@ -324,7 +323,6 @@ export default function TorquesGraphsSVG({
         const chartHeight = BASE_HEIGHT - 2 * PADDING;
 
         const scaleX = (angle) => PADDING + (angle - xMin) / (xMax - xMin) * chartWidth;
-        // Математика scaleY делает так, что yMax (самое большое положительное) имеет самую маленькую Y координату (то есть находится на самом верху SVG)
         const scaleY = (torque) => PADDING + chartHeight - ((torque - yMin) / (yMax - yMin) * chartHeight);
         
         const calculatedZeroY = scaleY(0);
@@ -343,7 +341,6 @@ export default function TorquesGraphsSVG({
         else if (scaleBase < 0.01) decimals = 4;
         else if (scaleBase < 0.1) decimals = 3;
 
-        // Генерация меток от положительных (верх) к отрицательным (низ)
         const labels = [1, 0.5, 0, -0.5, -1].map(factor => {
             const value = scaleBase * factor;
             let labelStr = "0";
@@ -351,7 +348,6 @@ export default function TorquesGraphsSVG({
             // Если значение не ноль, добавляем соответствующий знак
             if (Math.abs(value) > 1e-10) {
                 const fixed = Math.abs(value).toFixed(decimals);
-                // Явно добавляем + для верха и - для низа
                 labelStr = value > 0 ? `+${fixed}` : `-${fixed}`;
             }
 
@@ -459,7 +455,7 @@ export default function TorquesGraphsSVG({
 
                 {/* 4. Метки осей */}
                 <g>
-                    {/* Метки оси Y (Момент) - теперь с плюсами для верха и минусами для низа */}
+                    {/* Метки оси Y (Момент)*/}
                     {yLabels.map((l, index) => (
                         <text key={`y-label-${index}`} x={PADDING - 8} y={l.y + 4} textAnchor="end" fontSize="10" fill="var(--foreground, #ededed)">
                             {l.label}

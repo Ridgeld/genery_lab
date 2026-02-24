@@ -2,13 +2,13 @@
 import React, { useMemo } from 'react';
 import styles from './component.module.scss'
 
-const PADDING = 60; // Увеличил отступ для длинных чисел (экспонент)
+const PADDING = 65;
 const BASE_HEIGHT = 400;
 const GRAPH_STEPS = Array.from({ length: 73 }, (_, i) => i * 5);
 
 const LINE_COLORS = {
     A: '#e91e63',
-    N: '#673ab7'
+    N: '#00bcd4'  
 };
 
 export default function ImpactPowerGraph({
@@ -16,7 +16,6 @@ export default function ImpactPowerGraph({
     omega, m3,
     isShow
 }) {
-    // Умное форматирование для малых величин
     const formatValue = (val) => {
         if (!val || Math.abs(val) < 1e-12) return "0";
         const absV = Math.abs(val);
@@ -38,7 +37,6 @@ export default function ImpactPowerGraph({
             const dx = l0 - Bx, dy = -By;
             const d = Math.hypot(dx, dy);
 
-            // Проверка сборки
             if (d > l2 + l3 || d < Math.abs(l2 - l3) || d === 0) return null;
 
             const a = (l2 * l2 - l3 * l3 + d * d) / (2 * d);
@@ -52,10 +50,7 @@ export default function ImpactPowerGraph({
             const theta2 = Math.atan2(Cy - By, Cx - Bx);
             const theta3 = Math.atan2(Cy, Cx - l0);
 
-            // Знаменатель для расчета скорости
             const sinDiff = Math.sin(theta3 - theta2);
-            
-            // Если мы в мертвой точке (sinDiff около 0), пропускаем точку
             if (Math.abs(sinDiff) < 0.001) return null;
 
             const w3 = (omega * l1 * Math.sin(theta1 - theta2)) / (l3 * sinDiff);
@@ -65,7 +60,6 @@ export default function ImpactPowerGraph({
             return { angle: angleDeg, A: A_ud, N: N_ud };
         });
 
-        // Оставляем только валидные объекты с конечными числами
         return results.filter(d => d !== null && isFinite(d.A) && isFinite(d.N));
     }, [L0, L1, L2, L3, omega, m3]);
 
@@ -76,7 +70,6 @@ export default function ImpactPowerGraph({
         const chartW = width - 2 * PADDING;
         const chartH = BASE_HEIGHT - 2 * PADDING;
 
-        // Ищем максимумы, игнорируя выбросы (если есть)
         const allA = chartData.map(d => d.A);
         const allN = chartData.map(d => d.N);
         const maxA = Math.max(...allA) || 1e-6;
@@ -101,61 +94,88 @@ export default function ImpactPowerGraph({
 
     if (!svgData) {
         return (
-            <div style={{ padding: '20px', border: '1px solid #ffcfcf', color: '#d32f2f', borderRadius: '8px', background: '#fff' }}>
-                Недостаточно данных для построения графика (проверьте параметры звеньев).
+            <div style={{ padding: '20px', border: '1px solid var(--border)', color: '#d32f2f', borderRadius: '8px', background: 'var(--secondary)' }}>
+                Недостаточно данных для построения графика.
             </div>
         );
     }
 
     return (
         <div className={styles.container}>
-            <h3 >
-                Энергетические характеристики удара
-            </h3>
+            <h3>Энергетические характеристики удара</h3>
             
             <svg viewBox={`0 0 ${svgData.width} ${BASE_HEIGHT}`} width="100%" style={{ overflow: 'visible' }}>
+                
                 {/* Сетка */}
-                <g stroke="#8f8f8fff" strokeWidth="1">
+                <g stroke="var(--border, #252525)" strokeWidth="1">
                     {svgData.yTicks.map((t, i) => (
                         <line key={i} x1={PADDING} y1={t.pos} x2={svgData.width - PADDING} y2={t.pos} />
                     ))}
                     {[0, 90, 180, 270, 360].map(deg => {
                         const x = PADDING + (deg / 360) * svgData.chartW;
-                        return <line key={deg} x1={x} y1={PADDING} x2={x} y2={BASE_HEIGHT - PADDING} />;
+                        return <line key={deg} x1={x} y1={PADDING} x2={x} y2={BASE_HEIGHT - PADDING} strokeDasharray="3 3"/>;
                     })}
                 </g>
 
                 {/* Оси */}
-                <line x1={PADDING} y1={BASE_HEIGHT - PADDING} x2={svgData.width - PADDING} y2={BASE_HEIGHT - PADDING} stroke="#444" strokeWidth="1.5" />
+                <line x1={PADDING} y1={BASE_HEIGHT - PADDING} x2={svgData.width - PADDING} y2={BASE_HEIGHT - PADDING} stroke="var(--foreground, #ededed)" strokeWidth="1.5" />
                 <line x1={PADDING} y1={PADDING} x2={PADDING} y2={BASE_HEIGHT - PADDING} stroke={LINE_COLORS.A} strokeWidth="1.5" />
                 <line x1={svgData.width - PADDING} y1={PADDING} x2={svgData.width - PADDING} y2={BASE_HEIGHT - PADDING} stroke={LINE_COLORS.N} strokeWidth="1.5" />
 
-                {/* Кривые */}
-                <polyline points={svgData.pointsA} fill="none" stroke={LINE_COLORS.A} strokeWidth="2.5" strokeLinejoin="round" />
-                <polyline points={svgData.pointsN} fill="none" stroke={LINE_COLORS.N} strokeWidth="2" strokeDasharray="5,3" strokeLinejoin="round" />
 
-                {/* Текстовые метки */}
-                <g fontSize="11" fill="#666" fontFamily="Arial, sans-serif">
+                <polyline points={svgData.pointsA} fill="none" stroke={LINE_COLORS.A} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                <polyline points={svgData.pointsN} fill="none" stroke={LINE_COLORS.N} strokeWidth="2" strokeDasharray="8,6" strokeLinecap="round" strokeLinejoin="round" />
+
+                {/* Текстовые метки осей */}
+                <g fontSize="11" fontFamily="inherit">
                     {svgData.yTicks.map((t, i) => (
                         <React.Fragment key={i}>
+                            {/* Левая шкала (Розовая) */}
                             <text x={PADDING - 8} y={t.pos + 4} textAnchor="end" fill={LINE_COLORS.A} fontWeight="bold">{t.labelA}</text>
+                            {/* Правая шкала (Бирюзовая) */}
                             <text x={svgData.width - PADDING + 8} y={t.pos + 4} textAnchor="start" fill={LINE_COLORS.N} fontWeight="bold">{t.labelN}</text>
                         </React.Fragment>
                     ))}
                     {[0, 90, 180, 270, 360].map(deg => (
-                        <text key={deg} x={PADDING + (deg / 360) * svgData.chartW} y={BASE_HEIGHT - PADDING + 20} textAnchor="middle">
+                        <text key={deg} x={PADDING + (deg / 360) * svgData.chartW} y={BASE_HEIGHT - PADDING + 20} textAnchor="middle" fill="var(--foreground, #ededed)">
                             {deg}°
                         </text>
                     ))}
+
+                    {/* Подпись левой оси */}
+                    <text 
+                        x={15} 
+                        y={BASE_HEIGHT / 2} 
+                        textAnchor="middle" 
+                        fill={LINE_COLORS.A} 
+                        fontWeight="bold"
+                        transform={`rotate(-90, 15, ${BASE_HEIGHT / 2})`}
+                    >
+                        Работа (A), Дж
+                    </text>
+
+                    {/* Подпись правой оси */}
+                    <text 
+                        x={svgData.width - 15} 
+                        y={BASE_HEIGHT / 2} 
+                        textAnchor="middle" 
+                        fill={LINE_COLORS.N} 
+                        fontWeight="bold"
+                        transform={`rotate(90, ${svgData.width - 15}, ${BASE_HEIGHT / 2})`}
+                    >
+                        Мощность (N), Вт
+                    </text>
                 </g>
 
                 {/* Легенда */}
                 <g transform={`translate(${PADDING + 20}, ${PADDING + 10})`}>
-                    <rect x="-5" y="-5" width="130" height="45" fill="rgba(255,255,255,0.8)" rx="4" />
-                    <line x1="0" y1="10" x2="20" y2="10" stroke={LINE_COLORS.A} strokeWidth="3" />
-                    <text x="25" y="14" fontSize="11">A (Работа, Дж)</text>
-                    <line x1="0" y1="28" x2="20" y2="28" stroke={LINE_COLORS.N} strokeWidth="2" strokeDasharray="4" />
-                    <text x="25" y="32" fontSize="11">N (Мощность, Вт)</text>
+                    <rect x="-10" y="-10" width="160" height="55" fill="var(--secondary, #2a2a2a)" stroke="var(--border, #252525)" rx="6" />
+                    
+                    <line x1="0" y1="5" x2="20" y2="5" stroke={LINE_COLORS.A} strokeWidth="3" />
+                    <text x="30" y="9" fontSize="11" fill="var(--foreground, #ededed)">A (Работа, Дж)</text>
+                    
+                    <line x1="0" y1="25" x2="20" y2="25" stroke={LINE_COLORS.N} strokeWidth="2" strokeDasharray="4" />
+                    <text x="30" y="29" fontSize="11" fill="var(--foreground, #ededed)">N (Мощность, Вт)</text>
                 </g>
             </svg>
         </div>

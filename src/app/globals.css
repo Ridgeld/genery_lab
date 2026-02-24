@@ -9,18 +9,18 @@
 }
 
 :root {
-  --active: #105CFF; /* Убрал лишние кавычки */
-  --background: #000000; /* Теперь фон всегда чисто черный. Если нужен темно-серый, используй #0a0a0a */
+  --active: #105CFF;
+  --background: #000000; 
   --primary: #fff;
   --secondary: #2a2a2a;
   --third: #818181;
-  --foreground: #ededed; /* Светлый текст по умолчанию, чтобы его было видно на черном фоне */
+  --foreground: #ededed; 
   --elements: #0c0c0c;
   --border: #252525;
 }
 
 html {
-  color-scheme: dark; /* Принудительно включаем темную тему для системных элементов браузера */
+  color-scheme: dark;
 }
 
 html,
