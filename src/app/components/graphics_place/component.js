@@ -93,7 +93,7 @@ function drawMechanismReact(canvas, L0, L1, L2, L3, angle, actualWidth, actualHe
 /**
  * React компонент для отображения механизма.
  */
-export default function GraphicsPlace({ L0, L1, L2, L3, angle, isStop, onAngleChange }) {
+export default function GraphicsPlace({ L0, L1, L2, L3, angle, isStop, onAngleChange, isReverse }) {
     const canvasRef = useRef(null);
     const animIdRef = useRef(null);
     const angleRef = useRef(angle);
@@ -135,11 +135,16 @@ export default function GraphicsPlace({ L0, L1, L2, L3, angle, isStop, onAngleCh
 
 
     useEffect(() => {
-        if (!isStop) {
+    if (!isStop) {
+        const step = () => {
+            // 1. Определяем направление: если isReverse true, то -1, иначе 1
+            const direction = isReverse ? -1 : 1;
 
-          const step = () => {
-
-            angleRef.current = (angleRef.current + (omega * dt * 180 / Math.PI)) % 360;
+            // 2. Умножаем изменение угла на направление
+            const deltaAngle = (omega * dt * 180 / Math.PI) * direction;
+            
+            // 3. Обновляем угол (добавляем +360, чтобы при вычитании не уходить в минус для корректного остатка)
+            angleRef.current = (angleRef.current + deltaAngle + 360) % 360;
 
             drawMechanismReact(
                 canvasRef.current, 
@@ -148,28 +153,27 @@ export default function GraphicsPlace({ L0, L1, L2, L3, angle, isStop, onAngleCh
             );
 
             if (onAngleChange) {
-              onAngleChange(angleRef.current);
+                onAngleChange(angleRef.current);
             }
 
             animIdRef.current = requestAnimationFrame(step);
-          };
-          animIdRef.current = requestAnimationFrame(step);
-        } else {
-
-          if (animIdRef.current) {
-            cancelAnimationFrame(animIdRef.current);
-            animIdRef.current = null;
-          }
-        }
-
-
-        return () => {
-          if (animIdRef.current) {
-            cancelAnimationFrame(animIdRef.current);
-            animIdRef.current = null;
-          }
         };
-    }, [isStop, L0, L1, L2, L3, canvasSize.width, canvasSize.height]);
+        animIdRef.current = requestAnimationFrame(step);
+    } else {
+        if (animIdRef.current) {
+            cancelAnimationFrame(animIdRef.current);
+            animIdRef.current = null;
+        }
+    }
+
+    return () => {
+        if (animIdRef.current) {
+            cancelAnimationFrame(animIdRef.current);
+        }
+    };
+    // 4. ОБЯЗАТЕЛЬНО добавляем isReverse в зависимости, 
+    // чтобы цикл перезапустился с новым направлением
+}, [isStop, isReverse, L0, L1, L2, L3, canvasSize.width, canvasSize.height]);
 
 
     return (

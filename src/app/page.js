@@ -41,6 +41,7 @@ export default function Home() {
   });
   
   const [isStop, setIsStop] = useState(true);
+  const [isReverse, setIsReverse] = useState(false);
 
 
   const L1 = mechanismData[0]?.value ?? 0;
@@ -86,12 +87,17 @@ export default function Home() {
   const handleButtonClick = (val) => {
     setIsStop(val);
   };
+  const handleIconButtonClick = (val) => {
+    setIsReverse(val);
+  }
 
 
 
   return (
     <div className={styles['container']}>
-      <Header onButtonClick={handleButtonClick} />
+      <Header 
+            onButtonClick={handleButtonClick}
+            onIconButtonClick={handleIconButtonClick} />
       <Toolbar tools={tools} toolClick={handleToolClick}>
         <WorkPanel
             isShow={views.input}
@@ -105,6 +111,7 @@ export default function Home() {
           <div className={styles['group-row']}>
             <GraphicsPlace
               isStop={isStop}
+              isReverse={isReverse}
               L1={L1} L2={L2} L3={L3} L0={L0} angle={angle}
               onAngleChange={handleAngleChange}
             />
